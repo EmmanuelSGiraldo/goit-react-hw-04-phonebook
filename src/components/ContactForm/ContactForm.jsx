@@ -1,58 +1,57 @@
-import React, { Component } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import styles from './ContactForm.module.scss';
 
-class ContactForm extends Component {
-  state = {
-    name: '',
-    number: '',
-  };
+const ContactForm = ({ onAddContact }) => {
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
 
-  handleChange = event => {
+  const handleChange = (event) => {
     const { name, value } = event.target;
-    this.setState({ [name]: value });
+    if (name === 'name') {
+      setName(value);
+    } else if (name === 'number') {
+      setNumber(value);
+    }
   };
 
-  handleSubmit = event => {
+  const handleSubmit = (event) => {
     event.preventDefault();
-    const { name, number } = this.state;
 
-    this.props.onAddContact(name, number);
-    this.setState({ name: '', number: '' });
+    onAddContact(name, number);
+
+    setName('');
+    setNumber('');
   };
 
-  render() {
-    const { name, number } = this.state;
+  return (
+    <form onSubmit={handleSubmit} className={styles['contact-form']}>
+      <label>
+        Name:
+        <input
+          type="text"
+          name="name"
+          value={name}
+          onChange={handleChange}
+          required
+        />
+      </label>
 
-    return (
-      <form onSubmit={this.handleSubmit} className={styles['contact-form']}>
-        <label>
-          Name:
-          <input
-            type="text"
-            name="name"
-            value={name}
-            onChange={this.handleChange}
-            required
-          />
-        </label>
+      <label>
+        Number:
+        <input
+          type="tel"
+          name="number"
+          value={number}
+          onChange={handleChange}
+          required
+        />
+      </label>
 
-        <label>
-          Number:
-          <input
-            type="tel"
-            name="number"
-            value={number}
-            onChange={this.handleChange}
-            required
-          />
-        </label>
-
-        <button type="submit">Add contact</button>
-      </form>
-    );
-  }
-}
+      <button type="submit">Add contact</button>
+    </form>
+  );
+};
 
 ContactForm.propTypes = {
   onAddContact: PropTypes.func.isRequired,

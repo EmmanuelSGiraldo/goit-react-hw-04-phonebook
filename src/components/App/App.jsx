@@ -1,4 +1,4 @@
-import { Component } from "react";
+import  { useState, useEffect } from "react";
 import ContactForm from "../ContactForm/ContactForm";
 import ContactList from "../ContactList/ContactList";
 import Filter from "../Filter/Filter";
@@ -6,88 +6,75 @@ import styles from "./App.module.scss";
 
 const localStorageKey = "contacts";
 
-class App extends Component {
-  state = {
-    contacts: [],
-    filter: "",
-  };
+const App = () => {
+  const [contacts, setContacts] = useState([]);
+  const [filter, setFilter] = useState("");
 
-  // Este método se ejecuta después de que el componente se monta en el DOM.
-  componentDidMount() {
-    // Intentamos obtener los contactos almacenados en el local storage.
+  useEffect(() => {
     const storedContacts = localStorage.getItem(localStorageKey);
 
     if (storedContacts) {
-      // Si hay contactos almacenados, los parseamos y los establecemos en el estado de la aplicación.
       const parsedContacts = JSON.parse(storedContacts);
-      this.setState({ contacts: parsedContacts });
+      setContacts(parsedContacts);
     }
-  }
+  }, []);
 
-  addContact = (name, number) => {
-    const { contacts } = this.state;
+  useEffect(() => {
+    localStorage.setItem(localStorageKey, JSON.stringify(contacts));
+  }, [contacts]);
+
+  const addContact = (name, number) => {
     const newContact = {
-      id: this.generateId(),
+      id: generateId(),
       name,
       number,
     };
     const updatedContacts = [...contacts, newContact];
 
-    // Actualizamos el estado de los contactos y guardamos los cambios en el local storage.
-    this.setState({ contacts: updatedContacts }, () => {
-      localStorage.setItem(localStorageKey, JSON.stringify(updatedContacts));
-    });
+    setContacts(updatedContacts);
   };
 
-  generateId = () => {
+  const generateId = () => {
     return `id-${Math.random().toString(36).substr(2, 9)}`;
   };
 
-  handleFilterChange = (event) => {
-    this.setState({ filter: event.target.value });
+  const handleFilterChange = (event) => {
+    setFilter(event.target.value);
   };
 
-  getFilteredContacts = () => {
-    const { contacts, filter } = this.state;
+  const getFilteredContacts = () => {
     const normalizedFilter = filter.toLowerCase();
     return contacts.filter((contact) =>
       contact.name.toLowerCase().includes(normalizedFilter)
     );
   };
 
-  deleteContact = (id) => {
-    const { contacts } = this.state;
+  const deleteContact = (id) => {
     const updatedContacts = contacts.filter((contact) => contact.id !== id);
 
-    // Actualizamos el estado de los contactos y guardamos los cambios en el local storage.
-    this.setState({ contacts: updatedContacts }, () => {
-      localStorage.setItem(localStorageKey, JSON.stringify(updatedContacts));
-    });
+    setContacts(updatedContacts);
   };
 
-  render() {
-    const { filter } = this.state;
-    const filteredContacts = this.getFilteredContacts();
+  const filteredContacts = getFilteredContacts();
 
-    return (
-      <div className={styles.app}>
-        <h1>Phonebook</h1>
+  return (
+    <div className={styles.app}>
+      <h1>Phonebook</h1>
 
-        <ContactForm onAddContact={this.addContact} />
+      <ContactForm onAddContact={addContact} />
 
-        <h2>Contacts</h2>
+      <h2>Contacts</h2>
 
-        <Filter value={filter} onChange={this.handleFilterChange} />
+      <Filter value={filter} onChange={handleFilterChange} />
 
-        <ContactList
-          contacts={filteredContacts}
-          onDeleteContact={this.deleteContact}
-        />
+      <ContactList
+        contacts={filteredContacts}
+        onDeleteContact={deleteContact}
+      />
 
-        <h2>Designed by Emmanuel S Giraldo</h2>
-      </div>
-    );
-  }
-}
+      <h2>Designed by Emmanuel S Giraldo</h2>
+    </div>
+  );
+};
 
 export default App;
