@@ -1,0 +1,34 @@
+// ContactList.module.scss
+.contactList {
+  width: 100%;
+  list-style-type: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+
+  .contactItem {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    text-align: center;
+    justify-content: space-around;
+  }
+
+  .contactName {
+    width: 180px;
+    margin-left: 110px;
+  }
+
+  .deleteButton {
+    padding: 5px 10px;
+    background-color: #ff4136;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin: 0px;
+
+    &:hover {
+      background-color: #dc322f;
+    }
+  }
+}
